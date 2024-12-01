@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '24 12 * * *'  # Mỗi ngày vào 12:10 PM UTC (tương ứng với 7:10 PM UTC+7)
+    - cron: '27 12 * * *'  # Mỗi ngày vào 12:10 PM UTC (tương ứng với 7:10 PM UTC+7)
 
 jobs:
   build:
@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
+          distribution: 'adoptopenjdk'  # Hoặc 'zulu', tùy vào phân phối bạn muốn sử dụng
 
       - name: Verify JDK Version
         run: java -version  # In ra phiên bản Java đang được sử dụng
