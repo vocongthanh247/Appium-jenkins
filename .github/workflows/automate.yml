@@ -2,13 +2,13 @@ name: Android Appium Tests
 
 on:
   schedule:
-    - cron: '38 12 * * *'  # 12:35 PM UTC = 7:35 PM GMT+7
+    - cron: '45 12 * * *'  # 12:35 PM UTC = 7:35 PM GMT+7
   workflow_dispatch:      # Allows manual triggering
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
 
