@@ -15,7 +15,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11'  # Thay đổi nếu bạn sử dụng phiên bản khác
+          java-version: '21'  # Thay đổi nếu bạn sử dụng phiên bản khác
 
       - name: Compile Java code
         run: |
