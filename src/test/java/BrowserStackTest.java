@@ -10,10 +10,13 @@ public class BrowserStackTest {
         String accessKey = "AH576ScJ6B8qgD1DxLz6"; // Thay bằng Access Key của bạn
 
         DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("device", "Samsung Galaxy S21"); // Thay đổi thiết bị
-        caps.setCapability("os_version", "12.0"); // Cập nhật phiên bản OS
+        caps.setCapability("device", "Samsung Galaxy S21"); // Thiết bị
+        caps.setCapability("os_version", "12.0"); // Phiên bản OS
         caps.setCapability("browserstack.local", "false");
+        caps.setCapability("browser", "chrome"); // Thêm trình duyệt
         caps.setCapability("name", "Samsung Galaxy S21 Test");
+        caps.setCapability("browserstack.video", "true"); // Bật ghi video
+        caps.setCapability("browserstack.debug", "true"); // Bật ghi log
 
         try {
             WebDriver driver = new RemoteWebDriver(
