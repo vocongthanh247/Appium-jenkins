@@ -2,16 +2,15 @@ name: Run Automation Task
 
 on:
   schedule:
-    - cron: '26 18 * * *'  # Chạy vào lúc 6:26 PM mỗi ngày
+    - cron: '40 18 * * *'  # Chạy lúc 6h40 PM mỗi ngày
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Run your automation script
         run: |
-          echo "Chạy tự động hóa tại thời điểm này!"
+          echo "Chạy dự án vào thời gian này!"
