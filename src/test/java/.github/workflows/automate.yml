@@ -2,7 +2,7 @@ name: Run Automation Task
 
 on:
   schedule:
-    - cron: '26 18 * * *'  # Chạy vào lúc 6:26 PM mỗi ngày
+    - cron: '40 18 * * *'  # Chạy lúc 6h40 PM mỗi ngày
 
 jobs:
   build:
@@ -12,6 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run your automation script
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Thay đổi nếu bạn sử dụng phiên bản khác
+
+      - name: Compile Java code
         run: |
-          echo "Chạy tự động hóa tại thời điểm này!"
+          cd src/test/java
+          javac BrowserStackTest.java
+
+      - name: Run Java code
+        run: |
+          cd src/test/java
+          java BrowserStackTest
