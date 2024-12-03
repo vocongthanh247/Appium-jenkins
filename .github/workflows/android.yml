@@ -2,25 +2,27 @@ name: Android BrowserStack CI
 
 on:
   schedule:
-    - cron: '32 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
+    - cron: '20 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
   workflow_dispatch:  # Cho phép chạy thủ công nếu cần
 
 jobs:
   browserstack-android-test:
-    runs-on: ubuntu-latest  # Bạn có thể sử dụng ubuntu-latest cho máy chủ CI
+    runs-on: ubuntu-latest  # Sử dụng máy chủ CI trên ubuntu-latest
+
     strategy:
       matrix:
         device: [ 'Samsung Galaxy S22 Ultra', 'Samsung Galaxy S21', 'Google Pixel 6 Pro' ]
-        os: [ 'android' ]
         osVersion: [ '12.0', '11.0' ]
+        platformName: [ 'android' ]  # Đảm bảo tên hệ điều hành được xác định đúng
+
     name: Test Android - ${{ matrix.device }} - ${{ matrix.osVersion }}
 
     steps:
-      # Check out code từ repository
+      # Checkout code từ repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Thiết lập môi trường Java nếu cần (vì bạn đang dùng Appium, có thể cần Java)
+      # Thiết lập môi trường Java (Appium yêu cầu Java)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -70,3 +72,10 @@ jobs:
 
           # Chạy kiểm thử trên BrowserStack
           appium --use-legacy-packages --plugin browserstack --config browserstack_config.json
+
+      # Lưu trữ các kết quả kiểm tra dưới dạng artifacts (Ví dụ: logs, videos)
+      - name: Upload BrowserStack logs and videos as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: browserstack-logs
+          path: ./path-to-logs-or-videos-directory  # Đảm bảo rằng bạn đã chỉ định đúng đường dẫn đến thư mục chứa logs hoặc videos mà BrowserStack đã tạo ra
