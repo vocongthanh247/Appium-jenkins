@@ -48,22 +48,24 @@ jobs:
           echo "Creating browserstack_config.json"
           cat > browserstack_config.json <<EOF
           {
-            "app": "./WikipediaSample.apk",
-            "platforms": [
+            "capabilities": [
               {
                 "deviceName": "Samsung Galaxy S22 Ultra",
                 "osVersion": "12.0",
-                "platformName": "android"
+                "platformName": "android",
+                "app": "./WikipediaSample.apk"
               },
               {
                 "deviceName": "Samsung Galaxy S21",
                 "osVersion": "11.0",
-                "platformName": "android"
+                "platformName": "android",
+                "app": "./WikipediaSample.apk"
               },
               {
                 "deviceName": "Google Pixel 6 Pro",
                 "osVersion": "12.0",
-                "platformName": "android"
+                "platformName": "android",
+                "app": "./WikipediaSample.apk"
               }
             ]
           }
