@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '40 16 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '46 9 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
