@@ -2,7 +2,7 @@ name: Android BrowserStack CI
 
 on:
   schedule:
-    - cron: '20 14 * * *'  # Lịch trình chạy vào 1:55 PM UTC mỗi ngày
+    - cron: '32 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
   workflow_dispatch:  # Cho phép chạy thủ công nếu cần
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
       # Chạy kiểm thử Appium với BrowserStack
       - name: Run Appium tests on BrowserStack
         run: |
-          # Lưu trữ các thông tin bảo mật dưới dạng secret environment variables
+          # Sử dụng GitHub Secrets cho BrowserStack Credentials
           export BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}
           export BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
