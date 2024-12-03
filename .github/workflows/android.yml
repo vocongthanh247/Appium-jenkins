@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   schedule:
-    - cron: '40 16 * * *'  # Chạy vào 1:55 PM mỗi ngày (UTC)
+    - cron: '55 16 * * *'  # Chạy vào 1:55 PM mỗi ngày (UTC)
   workflow_dispatch:  # Cho phép chạy thủ công nếu cần
     inputs:
       commit_sha:
