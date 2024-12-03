@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3  # Checkout mã nguồn
 
       # Thiết lập JDK 11
       - name: Set up JDK 11
@@ -25,16 +25,16 @@ jobs:
         with:
           node-version: '18'
 
-      # Cài đặt Appium và các dependencies
+      # Cài đặt Appium
       - name: Install Appium and dependencies
         run: |
           npm install -g npm@latest  # Cập nhật npm lên phiên bản mới nhất
           npm install -g appium      # Cài đặt Appium
 
-      # Cài đặt Appium Android Driver
+      # Cài đặt Appium Android Driver từ GitHub nếu npm registry không tìm thấy
       - name: Install Appium Android Driver
         run: |
-          npm install appium-app-android-driver
+          npm install appium/appium-app-android-driver#master
 
       # Thiết lập BrowserStack Credentials
       - name: Set BrowserStack Credentials
@@ -42,25 +42,42 @@ jobs:
           echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> $GITHUB_ENV
           echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> $GITHUB_ENV
 
-      # Tạo file cấu hình BrowserStack
+      # Tạo file cấu hình BrowserStack từ các biến môi trường và JSON cấu hình
       - name: Create BrowserStack Config
         run: |
           echo "Creating browserstack_config.json"
           cat > browserstack_config.json <<EOF
           {
-            "desiredCapabilities": {
-              "browserstack.user": "$BROWSERSTACK_USERNAME",
-              "browserstack.key": "$BROWSERSTACK_ACCESS_KEY",
-              "project": "Android Appium Tests on BrowserStack",
-              "build": "browserstack-build-${{ github.run_id }}",
-              "device": "Samsung Galaxy S22 Ultra",
-              "os_version": "12.0",
-              "platformName": "Android",
-              "app": "bs://<your_app_hash_here>",
-              "browserstack.local": "true",
-              "browserstack.debug": "true",
-              "browserstack.networkLogs": "true"
-            }
+            "userName": "$BROWSERSTACK_USERNAME",
+            "accessKey": "$BROWSERSTACK_ACCESS_KEY",
+            "projectName": "BrowserStack Samples",
+            "buildName": "browserstack build",
+            "buildIdentifier": "#${{ github.run_id }}",
+            "framework": "testng",
+            "source": "testng:appium-sample-sdk:v1.1",
+            "app": "./WikipediaSample.apk",
+            "platforms": [
+              {
+                "deviceName": "Samsung Galaxy S22 Ultra",
+                "osVersion": "12.0",
+                "platformName": "android"
+              },
+              {
+                "deviceName": "Samsung Galaxy S21",
+                "osVersion": "11.0",
+                "platformName": "android"
+              },
+              {
+                "deviceName": "Google Pixel 6 Pro",
+                "osVersion": "12.0",
+                "platformName": "android"
+              }
+            ],
+            "parallelsPerPlatform": 1,
+            "browserstackLocal": true,
+            "debug": false,
+            "networkLogs": false,
+            "consoleLogs": "errors"
           }
           EOF
           cat browserstack_config.json  # In ra file cấu hình để kiểm tra
