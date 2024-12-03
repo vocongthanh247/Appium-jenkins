@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '50 14 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '35 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
@@ -31,10 +31,10 @@ jobs:
           npm install -g npm@latest  # Cập nhật npm lên phiên bản mới nhất
           npm install -g appium      # Cài đặt Appium
 
-      # Cài đặt Appium Android Driver
+      # Cài đặt Appium Android Driver (Sử dụng gói chính thức)
       - name: Install Appium Android Driver
         run: |
-          npm install appium-app-android-driver
+          npm install appium-android-driver
 
       # Thiết lập BrowserStack Credentials
       - name: Set BrowserStack Credentials
