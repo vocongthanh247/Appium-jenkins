@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '35 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '50 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
@@ -76,7 +76,7 @@ jobs:
       # Chạy kiểm thử trên BrowserStack
       - name: Run Appium Tests on BrowserStack
         run: |
-          appium --use-legacy-packages --plugin browserstack --config browserstack_config.json
+          appium --use-legacy-packages --config browserstack_config.json
 
       # Upload kết quả kiểm thử
       - name: Upload Test Results
