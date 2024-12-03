@@ -1,0 +1,129 @@
+name: Java SDK Test workflow for Maven on workflow_dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'The full commit id to build'
+        required: true
+
+jobs:
+  comment-run:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        java: [ '8', '11', '17' ]
+        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+    name: TestNG Appium Repo ${{ matrix.java }} - ${{ matrix.os }} Sample
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+
+    steps:
+      # 1. Checkout the code from the specified commit
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.commit_sha }}
+
+      # 2. Update status to in-progress for the commit
+      - uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        id: status-check-in-progress
+        env:
+          job_name: TestNG Appium Repo ${{ matrix.java }} - ${{ matrix.os }} Sample
+          commit_sha: ${{ github.event.inputs.commit_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const result = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.job_name,
+              head_sha: process.env.commit_sha,
+              status: 'in_progress'
+            }).catch((err) => ({status: err.status, response: err.response}));
+            console.log(`The status-check response : ${result.status} Response : ${JSON.stringify(result.response)}`)
+            if (result.status !== 201) {
+              console.log('Failed to create check run')
+            }
+
+      # 3. Set up Java environment
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+
+      # 4. Set up BrowserStack Local if needed
+      - name: Set up BrowserStack Local
+        run: |
+          curl -o BrowserStackLocal.zip https://www.browserstack.com/browserstack-local/BrowserStackLocal.zip
+          unzip BrowserStackLocal.zip
+          ./BrowserStackLocal --key ${{ secrets.BROWSERSTACK_ACCESS_KEY }} &
+
+      # 5. Run mvn tests for Android with BrowserStack (Android tests)
+      - name: Run mvn test for testng android
+        run: |
+          cd android/testng-examples
+          mvn compile
+          mvn test
+
+      # 6. Run mvn profile sample-test for Android with BrowserStack (Android tests)
+      - name: Run mvn profile sample-test for testng android
+        run: |
+          cd android/testng-examples
+          mvn compile
+          mvn test -P sample-test
+
+      # 7. Run mvn profile sample-local-test for Android (uses BrowserStack Local)
+      - name: Run mvn profile sample-local-test for testng android
+        run: |
+          cd android/testng-examples
+          mvn compile
+          mvn test -P sample-local-test -D"browserstack.app"="./LocalSample.apk"
+
+      # 8. Run mvn tests for iOS with BrowserStack (iOS tests)
+      - name: Run mvn test for testng ios
+        run: |
+          cd ios/testng-examples
+          mvn compile
+          mvn test
+
+      # 9. Run mvn profile sample-test for iOS with BrowserStack (iOS tests)
+      - name: Run mvn profile sample-test for testng ios
+        run: |
+          cd ios/testng-examples
+          mvn compile
+          mvn test -P sample-test
+
+      # 10. Run mvn profile sample-local-test for iOS (uses BrowserStack Local)
+      - name: Run mvn profile sample-local-test for testng ios
+        run: |
+          cd ios/testng-examples
+          mvn compile
+          mvn test -P sample-local-test -D"browserstack.app"="./LocalSample.ipa"
+
+      # 11. Update the status of the check to 'completed' based on the job status
+      - if: always()
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        id: status-check-completed
+        env:
+          conclusion: ${{ job.status }}
+          job_name: TestNG Appium Repo ${{ matrix.java }} - ${{ matrix.os }} Sample
+          commit_sha: ${{ github.event.inputs.commit_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const result = await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: process.env.job_name,
+            head_sha: process.env.commit_sha,
+            status: 'completed',
+            conclusion: process.env.conclusion
+            }).catch((err) => ({status: err.status, response: err.response}));
+            console.log(`The status-check response : ${result.status} Response : ${JSON.stringify(result.response)}`)
+            if (result.status !== 201) {
+              console.log('Failed to create check run')
+            }
