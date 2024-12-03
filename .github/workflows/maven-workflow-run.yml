@@ -3,7 +3,7 @@ name: Java SDK Test workflow for Maven on workflow_dispatch
 on:
   # Thêm cron để tự động chạy vào lúc 10h10 AM hàng ngày
   schedule:
-    - cron: '21 10 * * *'  # Thời gian chạy là 10h10 AM mỗi ngày
+    - cron: '11 12 * * *'  # Chạy vào 10:21 AM UTC mỗi ngày
   workflow_dispatch:
     inputs:
       commit_sha:
