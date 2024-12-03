@@ -1,62 +1,31 @@
-name: Android SDK Test workflow for BrowserStack
+name: Android CI
 
 on:
   schedule:
-      cron: '55 13 * * *'  # Lịch trình chạy vào 1:55 PM UTC mỗi ngày
-  workflow_dispatch:  # Cho phép chạy thủ công
+    - cron: '07 14 * * *'  # Chạy vào 1:55 PM mỗi ngày (UTC)
+  workflow_dispatch:  # Cho phép chạy thủ công nếu cần
+    inputs:
+      commit_sha:
+        description: 'The full commit id to build'
+        required: true
 
 jobs:
   android-test:
-    runs-on: ubuntu-latest  # Bạn có thể thay đổi nếu cần một hệ điều hành khác
-
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '8', '11', '17' ]  # Các phiên bản Java để chạy
-        device:
-          - deviceName: Samsung Galaxy S22 Ultra
-            osVersion: 12.0
-            platformName: android
-          - deviceName: Samsung Galaxy S21
-            osVersion: 11.0
-            platformName: android
-          - deviceName: Google Pixel 6 Pro
-            osVersion: 12.0
-            platformName: android
-
-    name: Test on Android Device ${{ matrix.device.deviceName }} with Java ${{ matrix.java }}
-
-    env:
-      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+        java: [ '8', '11', '17' ]
+        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+    name: Test Android - ${{ matrix.java }} - ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
-        name: Checkout Code
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      - name: Run tests on BrowserStack Android device
+      - name: Run mvn test for testng android
         run: |
           cd android/testng-examples
           mvn compile
-          mvn test -D"browserstack.device"="${{ matrix.device.deviceName }}" -D"browserstack.os_version"="${{ matrix.device.osVersion }}" -D"browserstack.platform_name"="${{ matrix.device.platformName }}" -D"browserstack.username"="${{ secrets.BROWSERSTACK_USERNAME }}" -D"browserstack.access_key"="${{ secrets.BROWSERSTACK_ACCESS_KEY }}"
-
-      - name: Mark Status as Completed
-        if: always()
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const result = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Test on BrowserStack Android',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion: 'success' // 'failure' or 'neutral' based on test results
-            });
-            console.log('Check run status: ', result.status);
+          mvn test
