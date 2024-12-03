@@ -48,6 +48,17 @@ jobs:
           echo "Creating browserstack_config.json"
           cat > browserstack_config.json <<EOF
           {
+            "userName": "${{ secrets.BROWSERSTACK_USERNAME }}",
+            "accessKey": "${{ secrets.BROWSERSTACK_ACCESS_KEY }}"
+          }
+          EOF
+
+      # Tạo file cấu hình Appium từ các khả năng
+      - name: Create Appium Config
+        run: |
+          echo "Creating appium_config.json"
+          cat > appium_config.json <<EOF
+          {
             "capabilities": [
               {
                 "deviceName": "Samsung Galaxy S22 Ultra",
@@ -70,12 +81,11 @@ jobs:
             ]
           }
           EOF
-          cat browserstack_config.json  # In ra file cấu hình để kiểm tra
 
       # Chạy kiểm thử trên BrowserStack
       - name: Run Appium Tests on BrowserStack
         run: |
-          appium --config browserstack_config.json
+          appium --config appium_config.json
 
       # Upload kết quả kiểm thử
       - name: Upload Test Results
