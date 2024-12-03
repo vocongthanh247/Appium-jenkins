@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '22 14 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '50 14 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
@@ -19,13 +19,13 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # Cài đặt Node.js
-      - name: Set up Node.js
+      # Cài đặt Node.js phiên bản 18 (hoặc cao hơn)
+      - name: Set up Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Phiên bản Node.js phù hợp với Appium
+          node-version: '18'
 
-      # Cập nhật npm và cài đặt Appium
+      # Cài đặt Appium và các dependencies
       - name: Install Appium and dependencies
         run: |
           npm install -g npm@latest  # Cập nhật npm lên phiên bản mới nhất
