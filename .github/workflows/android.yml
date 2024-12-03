@@ -31,10 +31,10 @@ jobs:
           npm install -g npm@latest  # Cập nhật npm lên phiên bản mới nhất
           npm install -g appium      # Cài đặt Appium
 
-      # Cài đặt Appium Android Driver từ GitHub nếu npm registry không tìm thấy
+      # Cài đặt Appium Android Driver từ npm registry
       - name: Install Appium Android Driver
         run: |
-          npm install appium/appium-app-android-driver#master
+          npm install appium-android-driver --save
 
       # Thiết lập BrowserStack Credentials
       - name: Set BrowserStack Credentials
