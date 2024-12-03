@@ -42,19 +42,12 @@ jobs:
           echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> $GITHUB_ENV
           echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> $GITHUB_ENV
 
-      # Tạo file cấu hình BrowserStack từ các biến môi trường và JSON cấu hình
+      # Tạo file cấu hình BrowserStack từ các biến môi trường
       - name: Create BrowserStack Config
         run: |
           echo "Creating browserstack_config.json"
           cat > browserstack_config.json <<EOF
           {
-            "userName": "$BROWSERSTACK_USERNAME",
-            "accessKey": "$BROWSERSTACK_ACCESS_KEY",
-            "projectName": "BrowserStack Samples",
-            "buildName": "browserstack build",
-            "buildIdentifier": "#${{ github.run_id }}",
-            "framework": "testng",
-            "source": "testng:appium-sample-sdk:v1.1",
             "app": "./WikipediaSample.apk",
             "platforms": [
               {
@@ -72,12 +65,7 @@ jobs:
                 "osVersion": "12.0",
                 "platformName": "android"
               }
-            ],
-            "parallelsPerPlatform": 1,
-            "browserstackLocal": true,
-            "debug": false,
-            "networkLogs": false,
-            "consoleLogs": "errors"
+            ]
           }
           EOF
           cat browserstack_config.json  # In ra file cấu hình để kiểm tra
