@@ -53,39 +53,10 @@ jobs:
           }
           EOF
 
-      # Tạo file cấu hình Appium từ các khả năng
-      - name: Create Appium Config
-        run: |
-          echo "Creating appium_config.json"
-          cat > appium_config.json <<EOF
-          {
-            "capabilities": [
-              {
-                "deviceName": "Samsung Galaxy S22 Ultra",
-                "osVersion": "12.0",
-                "platformName": "android",
-                "app": "./WikipediaSample.apk"
-              },
-              {
-                "deviceName": "Samsung Galaxy S21",
-                "osVersion": "11.0",
-                "platformName": "android",
-                "app": "./WikipediaSample.apk"
-              },
-              {
-                "deviceName": "Google Pixel 6 Pro",
-                "osVersion": "12.0",
-                "platformName": "android",
-                "app": "./WikipediaSample.apk"
-              }
-            ]
-          }
-          EOF
-
-      # Chạy kiểm thử trên BrowserStack
+      # Chạy kiểm thử trên BrowserStack với khả năng được truyền qua dòng lệnh
       - name: Run Appium Tests on BrowserStack
         run: |
-          appium --config appium_config.json
+          appium --config appium_config.json --capabilities '{"deviceName": "Samsung Galaxy S22 Ultra", "osVersion": "12.0", "platformName": "android", "app": "./WikipediaSample.apk"}'
 
       # Upload kết quả kiểm thử
       - name: Upload Test Results
