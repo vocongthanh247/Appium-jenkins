@@ -1,75 +1,77 @@
-name: Android Appium Tests
+name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '20 15 * * *'  # 10:05 UTC = 17:05 GMT+7 (Chạy vào 5 phút sau 10:00 AM UTC mỗi ngày)
-  workflow_dispatch:      # Cho phép chạy thủ công nếu cần
+    - cron: '40 16 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+  workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        device: [ 'Samsung Galaxy S22 Ultra', 'Samsung Galaxy S21', 'Google Pixel 6 Pro' ]
-        os: [ 'android' ]
-        osVersion: [ '12.0', '11.0' ]
-    name: Test Android - ${{ matrix.device }} - ${{ matrix.osVersion }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Thiết lập Java, vì Appium yêu cầu Java
-      - name: Set up Java
+      # Thiết lập JDK 11
+      - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
           java-version: '11'
+          distribution: 'temurin'
 
-      # Cài đặt Appium và các dependencies cần thiết
+      # Cài đặt Appium
       - name: Install Appium
         run: |
           npm install -g appium
 
+      # Cài đặt Appium Android Driver
       - name: Install Appium Android Driver
         run: |
           npm install appium-app-android-driver
 
-      # Chạy kiểm thử Appium với BrowserStack
-      - name: Run Appium tests on BrowserStack
+      # Thiết lập BrowserStack Credentials
+      - name: Set BrowserStack Credentials
         run: |
-          # Lưu trữ thông tin bảo mật
-          export BROWSERSTACK_USERNAME=thanhvo_DtH7RP
-          export BROWSERSTACK_ACCESS_KEY=AH576ScJ6B8qgD1DxLz6
+          echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> $GITHUB_ENV
+          echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> $GITHUB_ENV
 
-          # Tạo file cấu hình cho BrowserStack
+      # Tạo file cấu hình BrowserStack
+      - name: Create BrowserStack Config
+        run: |
           cat > browserstack_config.json <<EOF
           {
             "userName": "$BROWSERSTACK_USERNAME",
             "accessKey": "$BROWSERSTACK_ACCESS_KEY",
-            "projectName": "Android Appium Tests",
+            "projectName": "Android Appium Tests on BrowserStack",
             "buildName": "browserstack-build-${{ github.run_id }}",
             "platforms": [
               {
-                "deviceName": "${{ matrix.device }}",
-                "osVersion": "${{ matrix.osVersion }}",
+                "deviceName": "Samsung Galaxy S22 Ultra",
+                "osVersion": "12.0",
                 "platformName": "android",
-                "app": "bs://<your_app_hash_here>"  # Thay <your_app_hash_here> bằng hash ứng dụng thực tế
+                "app": "bs://<your_app_hash_here>"
+              },
+              {
+                "deviceName": "Samsung Galaxy S21",
+                "osVersion": "11.0",
+                "platformName": "android",
+                "app": "bs://<your_app_hash_here>"
               }
             ],
             "parallelsPerPlatform": 1,
             "browserstackLocal": true,
-            "debug": false,
-            "networkLogs": false,
+            "debug": true,
+            "networkLogs": true,
             "consoleLogs": "errors"
           }
           EOF
 
-          # Chạy kiểm thử trên BrowserStack
+      # Chạy kiểm thử trên BrowserStack
+      - name: Run Appium Tests on BrowserStack
+        run: |
           appium --use-legacy-packages --plugin browserstack --config browserstack_config.json
 
-      # Tải kết quả kiểm thử lên GitHub Actions (nếu có)
+      # Upload kết quả kiểm thử
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v3
