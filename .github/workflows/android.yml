@@ -1,79 +1,31 @@
-name: Android BrowserStack CI
+name: Android CI
 
 on:
   schedule:
-    - cron: '50 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
+    - cron: '57 14 * * *'  # Chạy vào 1:55 PM mỗi ngày (UTC)
   workflow_dispatch:  # Cho phép chạy thủ công nếu cần
+    inputs:
+      commit_sha:
+        description: 'The full commit id to build'
+        required: true
 
 jobs:
-  browserstack-android-test:
-    runs-on: ubuntu-latest  # Bạn có thể sử dụng ubuntu-latest cho máy chủ CI
+  android-test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        device: [ 'Samsung Galaxy S22 Ultra', 'Samsung Galaxy S21', 'Google Pixel 6 Pro' ]
-        os: [ 'android' ]
-        osVersion: [ '12.0', '11.0' ]
-    name: Test Android - ${{ matrix.device }} - ${{ matrix.osVersion }}
+        java: [ '8', '11', '17' ]
+        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+    name: Test Android - ${{ matrix.java }} - ${{ matrix.os }}
 
     steps:
-      # Check out code từ repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Thiết lập môi trường Java nếu cần (vì bạn đang dùng Appium, có thể cần Java)
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
-
-      # Cài đặt Appium
-      - name: Install Appium
+          java-version: ${{ matrix.java }}
+      - name: Run mvn test for testng android
         run: |
-          npm install -g appium
-
-      # Cài đặt các dependencies cần thiết cho Appium và Appium Android Driver
-      - name: Install Android dependencies
-        run: |
-          npm install appium-app-android-driver
-          npm install appium
-
-      # Chạy kiểm thử Appium với BrowserStack
-      - name: Run Appium tests on BrowserStack
-        run: |
-          # Lưu trữ các thông tin bảo mật dưới dạng secret environment variables
-          export BROWSERSTACK_USERNAME=thanhvo_DtH7RP
-          export BROWSERSTACK_ACCESS_KEY=AH576ScJ6B8qgD1DxLz6
-
-          # Tạo file cấu hình cho BrowserStack
-          cat > browserstack_config.json <<EOF
-          {
-            "userName": "$BROWSERSTACK_USERNAME",
-            "accessKey": "$BROWSERSTACK_ACCESS_KEY",
-            "projectName": "Android BrowserStack CI",
-            "buildName": "browserstack-build-${{ github.run_id }}",
-            "platforms": [
-              {
-                "deviceName": "${{ matrix.device }}",
-                "osVersion": "${{ matrix.osVersion }}",
-                "platformName": "android",
-                "app": "bs://<your_app_hash_here>"  # Thay <your_app_hash_here> bằng hash thực tế
-              }
-            ],
-            "parallelsPerPlatform": 1,
-            "browserstackLocal": true,
-            "debug": false,
-            "networkLogs": false,
-            "consoleLogs": "errors"
-          }
-          EOF
-
-          # Chạy kiểm thử trên BrowserStack
-          appium --use-legacy-packages --plugin browserstack --config browserstack_config.json
-
-      # Lưu trữ artifacts (logs, screenshots, etc.) từ test
-      - name: Upload BrowserStack Logs as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: browserstack-logs
-          path: ./path-to-logs-or-screenshots # Đảm bảo thay thế đúng đường dẫn đến logs hoặc screenshots bạn muốn lưu trữ
+          cd android/testng-examples
+          mvn compile
+          mvn test
