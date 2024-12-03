@@ -2,7 +2,7 @@ name: Android BrowserStack CI
 
 on:
   schedule:
-    - cron: '20 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
+    - cron: '41 14 * * *'  # Lịch trình chạy vào 14:20 PM UTC mỗi ngày
   workflow_dispatch:  # Cho phép chạy thủ công nếu cần
 
 jobs:
