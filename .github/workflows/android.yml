@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '55 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '50 14 * * *'  # Chạy vào 14:50 UTC (17:50 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
@@ -31,10 +31,10 @@ jobs:
           npm install -g npm@latest  # Cập nhật npm lên phiên bản mới nhất
           npm install -g appium      # Cài đặt Appium
 
-      # Cài đặt Appium Android Driver (Sử dụng gói chính thức)
+      # Cài đặt Appium Android Driver
       - name: Install Appium Android Driver
         run: |
-          npm install appium-android-driver
+          npm install appium-app-android-driver
 
       # Thiết lập BrowserStack Credentials
       - name: Set BrowserStack Credentials
@@ -42,9 +42,10 @@ jobs:
           echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> $GITHUB_ENV
           echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> $GITHUB_ENV
 
-      # Tạo file cấu hình BrowserStack (cấu hình cho desiredCapabilities)
+      # Tạo file cấu hình BrowserStack
       - name: Create BrowserStack Config
         run: |
+          echo "Creating browserstack_config.json"
           cat > browserstack_config.json <<EOF
           {
             "desiredCapabilities": {
@@ -55,13 +56,14 @@ jobs:
               "device": "Samsung Galaxy S22 Ultra",
               "os_version": "12.0",
               "platformName": "Android",
-              "app": "bs://<your_app_hash_here>",  // Cập nhật hash ứng dụng của bạn
+              "app": "bs://<your_app_hash_here>",
               "browserstack.local": "true",
               "browserstack.debug": "true",
               "browserstack.networkLogs": "true"
             }
           }
           EOF
+          cat browserstack_config.json  # In ra file cấu hình để kiểm tra
 
       # Chạy kiểm thử trên BrowserStack
       - name: Run Appium Tests on BrowserStack
