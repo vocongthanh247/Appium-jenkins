@@ -2,7 +2,7 @@ name: Android Appium Tests on BrowserStack
 
 on:
   schedule:
-    - cron: '50 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
+    - cron: '55 15 * * *'  # Chạy vào 10:05 UTC (17:05 GMT+7)
   workflow_dispatch:      # Cho phép chạy thủ công
 
 jobs:
@@ -42,34 +42,24 @@ jobs:
           echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> $GITHUB_ENV
           echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> $GITHUB_ENV
 
-      # Tạo file cấu hình BrowserStack
+      # Tạo file cấu hình BrowserStack (cấu hình cho desiredCapabilities)
       - name: Create BrowserStack Config
         run: |
           cat > browserstack_config.json <<EOF
           {
-            "userName": "$BROWSERSTACK_USERNAME",
-            "accessKey": "$BROWSERSTACK_ACCESS_KEY",
-            "projectName": "Android Appium Tests on BrowserStack",
-            "buildName": "browserstack-build-${{ github.run_id }}",
-            "platforms": [
-              {
-                "deviceName": "Samsung Galaxy S22 Ultra",
-                "osVersion": "12.0",
-                "platformName": "android",
-                "app": "bs://<your_app_hash_here>"
-              },
-              {
-                "deviceName": "Samsung Galaxy S21",
-                "osVersion": "11.0",
-                "platformName": "android",
-                "app": "bs://<your_app_hash_here>"
-              }
-            ],
-            "parallelsPerPlatform": 1,
-            "browserstackLocal": true,
-            "debug": true,
-            "networkLogs": true,
-            "consoleLogs": "errors"
+            "desiredCapabilities": {
+              "browserstack.user": "$BROWSERSTACK_USERNAME",
+              "browserstack.key": "$BROWSERSTACK_ACCESS_KEY",
+              "project": "Android Appium Tests on BrowserStack",
+              "build": "browserstack-build-${{ github.run_id }}",
+              "device": "Samsung Galaxy S22 Ultra",
+              "os_version": "12.0",
+              "platformName": "Android",
+              "app": "bs://<your_app_hash_here>",  // Cập nhật hash ứng dụng của bạn
+              "browserstack.local": "true",
+              "browserstack.debug": "true",
+              "browserstack.networkLogs": "true"
+            }
           }
           EOF
 
