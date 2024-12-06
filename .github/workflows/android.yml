@@ -11,12 +11,13 @@ on:
 
 jobs:
   android-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Chỉ chạy trên Ubuntu
+
+    name: Test Android - ${{ matrix.java }} - Ubuntu
+
     strategy:
       matrix:
-        java: [ '21' ]  # Chỉ sử dụng Java 21
-        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
-    name: Test Android - ${{ matrix.java }} - ${{ matrix.os }}
+        java: ['21']  # Chỉ sử dụng Java 21
 
     steps:
       - uses: actions/checkout@v3
