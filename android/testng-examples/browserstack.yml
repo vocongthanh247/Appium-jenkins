@@ -26,8 +26,8 @@ framework: testng
 
 source: testng:appium-sample-sdk:v1.1
 
-app: ./WikipediaSample.apk
-app1: ./LocalSample.apk #For running local tests
+#app: ./WikipediaSample.apk
+app: ./LocalSample.apk #For running local tests
 
 # =======================================
 # Platforms (Browsers / Devices to test)
